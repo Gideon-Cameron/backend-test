@@ -1,0 +1,33 @@
+{
+  "name": "fluentwave-backend",
+  "version": "1.0.0",
+  "description": "Backend for FluentWave - Express.js and MongoDB",
+  "main": "server.js",  // Ensure this points to your entry file (server.js)
+  "scripts": {
+    "start": "node server.js",  // Start script for production
+    "dev": "nodemon server.js", // Development script
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["express", "backend", "node", "mongodb"],
+  "author": "Your Name",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.16",
+    "cookie-parser": "^1.4.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+  },
+  "engines": {
+    "node": ">=18.0.0"  // Specify Node.js version for Render
+  }
+}
