@@ -17,8 +17,9 @@ const app = express();
 
 // Middleware
 app.use(cors({ 
-  origin: 'https://fluentwave-test.netlify.app' 
-})); // Adjust origin based on frontend deploymentapp.use(bodyParser.json());
+  origin: ['http://localhost:3000', 'https://fluentwave-test.netlify.app'] // Allow both local and deployed frontend URLs
+})); // Adjust origin based on frontend deployment
+app.use(bodyParser.json());
 app.use('/uploads', express.static(uploadsDir));
 
 // MongoDB connection URI from .env
