@@ -16,8 +16,9 @@ if (!fs.existsSync(uploadsDir)) {
 const app = express();
 
 // Middleware
-app.use(cors({ origin: ['http://localhost:3000', 'https://fluentwave-beta.netlify.app'] })); // Adjust origin based on frontend deployment
-app.use(bodyParser.json());
+app.use(cors({ 
+  origin: 'https://fluentwave-test.netlify.app' 
+})); // Adjust origin based on frontend deploymentapp.use(bodyParser.json());
 app.use('/uploads', express.static(uploadsDir));
 
 // MongoDB connection URI from .env
