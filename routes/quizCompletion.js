@@ -24,6 +24,10 @@ const calculateLevel = (xp) => {
 };
 
 // POST /api/quiz-completion/:quizId/complete
+
+
+//
+// POST /api/quiz-completion/:quizId/complete
 router.post('/:quizId/complete', async (req, res) => {
   const { userId, lessonId, score, totalQuestions } = req.body;
 
@@ -58,32 +62,21 @@ router.post('/:quizId/complete', async (req, res) => {
       (p) => p.lessonId.toString() === lessonId.toString()
     );
 
-    const hasCompletedLesson = !!lessonProgress?.completed;
+    // Calculate score percentage
+    const scorePercentage = (score / totalQuestions) * 100;
 
-    // Validate score
-    if (score > totalQuestions) {
-      return res.status(400).json({ error: 'Score exceeds total questions.' });
-    }
+    // Only mark the lesson as completed if the score is 70% or more
+    const isCompleted = scorePercentage >= 70;
 
-    // XP Calculation
-    const baseXp = hasCompletedLesson ? 10 : 20;
-    const scoreBonus = Math.floor((score / totalQuestions) * 10);
-    const xpGained = baseXp + scoreBonus;
-
-    user.totalXp += xpGained;
-    const { level, xpRemaining, xpForNextLevel } = calculateLevel(user.totalXp);
-    user.level = level;
-    user.xp = xpRemaining;
-
-    // Update progress for the current lesson
+    // Update the user's progress only if they passed the 70% threshold
     if (lessonProgress) {
-      lessonProgress.completed = true;
+      lessonProgress.completed = isCompleted;
       lessonProgress.score = Math.max(lessonProgress.score, score);
     } else {
       user.progress.push({
         sectionId,
         lessonId: lessonId.toString(),
-        completed: true,
+        completed: isCompleted,
         score,
       });
     }
@@ -109,6 +102,16 @@ router.post('/:quizId/complete', async (req, res) => {
         console.log(`[QuizCompletion] Unlocked next lesson: ${nextLesson.title}`);
       }
     }
+
+    // XP Calculation
+    const baseXp = isCompleted ? 20 : 0; // XP given only if lesson is completed
+    const scoreBonus = Math.floor((score / totalQuestions) * 10);
+    const xpGained = baseXp + scoreBonus;
+
+    user.totalXp += xpGained;
+    const { level, xpRemaining, xpForNextLevel } = calculateLevel(user.totalXp);
+    user.level = level;
+    user.xp = xpRemaining;
 
     // Save user progress
     await user.save();

@@ -82,7 +82,13 @@ UserSchema.methods.addXP = function (xpEarned) {
 };
 
 // Mark a lesson as completed and unlock N+1 lessons
-UserSchema.methods.completeLesson = async function (lessonId, score = 0) {
+UserSchema.methods.completeLesson = async function (lessonId, score = 0, totalQuestions = 0) {
+  // Calculate the percentage score
+  const scorePercentage = (score / totalQuestions) * 100;
+
+  // Only mark the lesson as completed if the score is 70% or more
+  const isCompleted = scorePercentage >= 70;
+
   if (!this.completedLessons.includes(lessonId)) {
     this.completedLessons.push(lessonId);
   }
@@ -92,7 +98,7 @@ UserSchema.methods.completeLesson = async function (lessonId, score = 0) {
   );
 
   if (lessonProgress) {
-    lessonProgress.completed = true;
+    lessonProgress.completed = isCompleted;
     lessonProgress.score = Math.max(lessonProgress.score, score);
   } else {
     const lesson = await Lesson.findById(lessonId);
@@ -100,7 +106,7 @@ UserSchema.methods.completeLesson = async function (lessonId, score = 0) {
       this.progress.push({
         sectionId: lesson.sectionId,
         lessonId: lessonId,
-        completed: true,
+        completed: isCompleted,
         score,
       });
     }
