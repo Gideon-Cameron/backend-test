@@ -24,12 +24,8 @@ const calculateLevel = (xp) => {
 };
 
 // POST /api/quiz-completion/:quizId/complete
-
-
-//
-// POST /api/quiz-completion/:quizId/complete
 router.post('/:quizId/complete', async (req, res) => {
-  const { userId, lessonId, score, totalQuestions } = req.body;
+  const { userId, lessonId, score, totalQuestions, scorePercentage } = req.body;
 
   try {
     console.log(`[QuizCompletion] Processing completion for user: ${userId}, lesson: ${lessonId}`);
@@ -61,9 +57,6 @@ router.post('/:quizId/complete', async (req, res) => {
     let lessonProgress = user.progress.find(
       (p) => p.lessonId.toString() === lessonId.toString()
     );
-
-    // Calculate score percentage
-    const scorePercentage = (score / totalQuestions) * 100;
 
     // Only mark the lesson as completed if the score is 70% or more
     const isCompleted = scorePercentage >= 70;
@@ -117,12 +110,13 @@ router.post('/:quizId/complete', async (req, res) => {
     await user.save();
 
     res.json({
-      message: 'Quiz completed successfully!',
+      message: isCompleted ? 'Quiz completed successfully!' : 'Lesson incompleted. Better luck next time!',
       xpGained,
       totalXP: user.totalXp,
       xpRemaining,
       xpForNextLevel,
       level: user.level,
+      lessonStatus: isCompleted ? 'completed' : 'incomplete', // Include lesson status
     });
   } catch (error) {
     console.error('Error completing quiz:', error);
